@@ -1,2 +1,6 @@
-package apiTests.entities;public enum Color {
+package apiTests.entities;
+
+public enum Color {
+    BLACK,
+    GREY
 }

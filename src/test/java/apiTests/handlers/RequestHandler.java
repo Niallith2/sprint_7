@@ -1,6 +1,8 @@
 package apiTests.handlers;
 import io.restassured.response.Response;
 
+import java.util.HashMap;
+
 import static io.restassured.RestAssured.given;
 
 public class RequestHandler {
@@ -15,6 +17,19 @@ public class RequestHandler {
     public Response sendDeleteRequest(String url){
         return given().delete(url);
     }
+
+    public Response sendPutRequest(HashMap<String, Integer> params, String url){
+         return given()
+                .queryParams(params)
+                .when()
+                .put(url);
+    }
+
+    public Response sendGetRequest(String url){
+        return given().get(url);
+    }
+
+
 
 
 }

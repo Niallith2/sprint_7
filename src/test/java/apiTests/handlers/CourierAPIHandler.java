@@ -4,21 +4,19 @@ import apiTests.entities.Courier;
 import apiTests.entities.CourierResponse;
 import io.qameta.allure.Step;
 import io.restassured.response.Response;
+import org.junit.Assert;
 
 import static io.restassured.RestAssured.given;
 import static org.hamcrest.core.IsEqual.equalTo;
 
 public class CourierAPIHandler extends BaseAPIHandler{
     @Step("Отправка запроса на создание курьера")
-    public static Response createCourier(String login, String password, String firstName){
+    public static Response createCourier(Courier courier){
         return new RequestHandler()
-                .sendPostRequest(new Courier(login, password, firstName), ScooterServiceUrls.CREATE_COURIER);
+                .sendPostRequest(courier, ScooterServiceUrls.CREATE_COURIER);
     }
 
-    @Step("Проверка текста ответа")
-    public static void checkResponseMessage(Response response, String expectedMessage, Object object){
-        response.then().assertThat().body(expectedMessage, equalTo(object));
-    }
+
 
     @Step("Проверка создания курьера")
     public static void isCourierCreated(Response response){
@@ -33,10 +31,20 @@ public class CourierAPIHandler extends BaseAPIHandler{
 
     @Step("Логин курьера в системе")
     public static Response loginCourier(Courier courier){
-        return new RequestHandler().sendPostRequest(courier, ScooterServiceUrls.LOGIN_COURIER);
+        return new RequestHandler()
+                .sendPostRequest(courier, ScooterServiceUrls.LOGIN_COURIER);
     }
 
     public static int getCourierID(Courier courier){
-        return loginCourier(courier).as(CourierResponse.class).getId();
+        try {
+            return loginCourier(courier).as(CourierResponse.class).getId();
+        }catch (NullPointerException e){
+            return -1;//Вернем -1, если поймали NullPointerException, в случае если пытаемся получить несуществующий ID
+        }
+
+    }
+    @Step("Проверка ID на !NULL")
+    public static void checkCourierIdIsNotNull(Courier courier){
+        Assert.assertTrue(getCourierID(courier) != -1);
     }
 }
